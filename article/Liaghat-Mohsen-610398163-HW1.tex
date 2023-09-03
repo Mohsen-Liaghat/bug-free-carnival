@@ -1,0 +1,81 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{xepersian}
+
+\settextfont{Arabic Typesetting}
+
+
+\title{حل ماز به کمک learning Q}
+\author{محسن لیاقت 610398163}
+\begin{document}
+	\maketitle
+	\tableofcontents
+    
+    \section{تعاریف}
+        \begin{description}
+        	\item[state : ] هر state شامل موقعیت مکانی agent و موقعیت پرچم های دیده نشده است.
+        	\item[actions : ] بالا، پایین، چپ، راست
+        	\item[rewards : ] \quad
+        	    \begin{description}
+        	    	\item[ رفتن به state goal : ] + تعداد کل پرچم ها + 1
+        	    	\item[رسیدن به پرچمی که دیده نشده : ] +1
+        	    	\item[در غیر این صورت : ] -1
+        	    \end{description}
+            \item[state goal : ] موقعیت agent با هدف برابر باشد و هیچ پرچم دیده نشده ای وجود نداشته باشد.
+        \end{description}
+	\section{تعداد حالت ها }
+	    تعداد حالت ها حداکثر برابر است با:
+	    \[ 
+	    2^{\textrm{number of flags}} * (\textrm{number of agent possible positions} - \textrm{number of flags} ) + \textrm{number of flags} * 2^{\textrm{number of flags} - 1 }
+	    \]
+	    \[
+	     =2^{\textrm{number of flags} - 1 } ( 2 * \textrm{number of agent possible positions} - \textrm{number of flags} )
+	    \]
+	    زیرا این مقدار برابر است با کاردینالیتی ضرب دکارتی powerset موقعیت پرچم ها در مجموعه همه موقعیت های ممکن برای agent به جز حالت هایی که agent روی یک پرچم باشد و آن پرچم را ندیده باشد.\\
+	    برای کم تر کردن تعداد حالت ها می توان پیش از اجرای الگوریتم تمام حالت هایی که برای agent قابل دسترس نیستند را شناسایی و حذف کرد. برای این کار نیز کافی است یک الگوریتم پیمایش گراف را اجرا کنیم و هر استیت که با شروع از استیت آغاز قابل دسترسی نبود را حذف کنیم.
+	    
+	    \section{گراف حالت ها}
+	        باتوجه به نتیجه محاسبات در قسمت پیش می توان فهمید که تعداد استیت ها بسیار زیاد است چیزی در حدود 9000 حالت پس عملا نمایش گراف مربوط به آنها ممکن نمی باشد.
+	    \section{برسی مقادیر $\gamma$ و $\alpha$}
+	        با توجه به روش محاسبه Q که به صورت زیر است می توان فهمید که 
+	        \begin{itemize}
+	        	\item 	        $\alpha$ درواقع تعیین کننده میزان یادگیری agent از دفعات قبلی اجرا است درواقع 
+	        	$\alpha = 1$ نمایانگر این است که agent از فقط از پیمایش کنونی خود یاد می گیرد و $\alpha = 0$ به معنای عدم یادگیری agent است.
+	        	$\alpha$ مقادیر بین صفر و 1 را اختیار می کند و هر چه به صفر نزدیک تر باشد یادگیری agent کمتر است.\\
+	        	\item $\gamma$ نیز مقادیر بین صفر و یک را اختیار می کند و مشخص کننده میزان توجه agent به بهترین آینده ممکن در هر state را نشان می دهد. درواقع هر چه $\gamma$ به یک نزدیک تر باشد agent به بهترین آینده ممکن بیشتر توجه دارد.
+	        \end{itemize}
+        توجه شود که با توجه به بالا بودن تعداد state ها نمی توان اپیزود ها را رسم کرد ولی table Q مربوط به 9 حالت خواسته شده در صورت سوال ضمیمه شده است و سیاست حرکت از هر استیت با رنگ آبی مشخص شده است. ( هر جدول حاصل 10000 اپیزود است. )
+	\section{یک مثال دیگر}
+	    به عنوان یک مثال دیگر ماز زیر را به همراه 
+	    $\alpha = 0.5 = \gamma$ به برنامه دادیم table Q خروجی را در فایلی به نام \lr{another example.pdf} ذخیره کردیم.
+	    
+	    \begin{latin}
+	    \begin{center}
+	    	\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+	    		\hline
+	    		\textcolor{red}{B}&W&W&W&W&W&\textcolor{red}{B}&\textcolor{red}{B}&W&\textcolor{blue}{A}\\
+	    		\hline
+	    		W&W&W&W&\textcolor{red}{B}&\textcolor{red}{B}&W&W&W&\textcolor{violet}{F}\\
+	    		\hline
+	    		W&W&W&W&W&W&W&W&W&\textcolor{green}{T}\\
+	    		\hline
+	    		\textcolor{red}{B}&\textcolor{red}{B}&W&W&W&W&W&\textcolor{red}{B}&\textcolor{red}{B}&W\\
+	    		\hline
+	    		W&\textcolor{violet}{F}&W&W&W&\textcolor{red}{B}&\textcolor{violet}{F}&W&W&W\\
+	    		\hline
+	    		\textcolor{red}{B}&W&W&W&W&W&W&W&W&W\\
+	    		\hline
+	    		W&W&\textcolor{red}{B}&W&\textcolor{red}{B}&\textcolor{red}{B}&\textcolor{red}{B}&W&\textcolor{red}{B}&W\\
+	    		\hline
+	    		\textcolor{red}{B}&\textcolor{violet}{F}&W&W&\textcolor{violet}{F}&\textcolor{red}{B}&W&W&W&\textcolor{red}{B}\\
+	    		\hline
+	    		W&W&W&\textcolor{red}{B}&\textcolor{red}{B}&W&W&W&\textcolor{red}{B}&W\\
+	    		\hline
+	    		W&W&\textcolor{red}{B}&W&W&W&W&W&W&W\\
+	    		\hline
+	    	\end{tabular}
+	    \end{center}
+    \end{latin}
+\end{document}
